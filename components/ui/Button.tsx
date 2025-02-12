@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes } from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }
 
 export  function Button({ className = "", ...props }: ButtonProps) {
   return (

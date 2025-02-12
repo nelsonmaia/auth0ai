@@ -10,5 +10,5 @@ export function Card({ children, className }: CardProps) {
   }
 
 export function CardContent({ children, className }: { children: ReactNode, className? : string }) {
-  return <div className="text-white">{children}</div>;
+  return <div className={`text-white ${className}`}>{children}</div>;
 }

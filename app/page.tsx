@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { Send, Menu, UserCircle } from "lucide-react";
+import { Send, Menu } from "lucide-react";
 
-import { createRoot } from 'react-dom/client';
+
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 function UserProfile() {
@@ -19,7 +20,7 @@ function UserProfile() {
   return (
     isAuthenticated && (
       <div className="flex items-center space-x-2">
-        <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
+        <Image src={user?.picture || '/default-avatar.png'} alt={user?.name || 'User'} width={32} height={32} className='rounded-full' />
       </div>
     )
   );
