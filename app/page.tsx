@@ -11,7 +11,7 @@ import { Send, Menu } from "lucide-react";
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 function UserProfile() {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
 
   if (isLoading) {
     return <div>Loading ...</div>;
