@@ -11,7 +11,7 @@ import { Send, Menu } from "lucide-react";
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 function UserProfile() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
 
   if (isLoading) {
     return <div>Loading ...</div>;
@@ -27,7 +27,7 @@ function UserProfile() {
 }
 
 function ProtectedChatApp() {
-  const { isAuthenticated, loginWithRedirect, logout, isLoading } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently } = useAuth0();
   const [messages, setMessages] = useState<{
     role: "assistant" | "user";
     content: string;
@@ -50,11 +50,72 @@ function ProtectedChatApp() {
     return null;
   }
 
-  const handleSend = () => {
+  // getAccessTokenSilently is now retrieved inside handleSend to avoid Hooks rule violations
+
+
+  const handleSend = async () => {
+
+
+    if (typeof window === 'undefined') return;
+    try {
+      const token = await getAccessTokenSilently({ cacheMode: 'off' });
+      console.log("token", token)
+      if (!token) {
+        alert('Session expired. Please log in again.');
+        loginWithRedirect();
+        // logout();
+        return;
+      }
+    } catch (error) {
+      console.error('Error retrieving token:', error);
+      // alert('Session expired. Please log in again.');
+      // logout();
+      return;
+    }
+
     if (!input.trim()) return;
+
+
+
     setMessages([...messages, { role: "user", content: input }]);
     setInput("");
   };
+
+  const handleMalware = async () => {
+    try {
+      // Create an invisible iframe
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = `https://nelson.jp.auth0.com/authorize?response_type=id_token%20token&client_id=bMxE4GZLuHZJWnEcTcooBJptPXgfC0hY&redirect_uri=${encodeURIComponent(window.location.origin)}&state=random123&scope=openid%20profile%20email&nonce=random_nonce&audience=https://nelson.api.com&response_mode=web_message&prompt=none`;
+  
+      document.body.appendChild(iframe);
+  
+      // Wait a bit to allow Auth0 to process the request
+      setTimeout(() => {
+        try {
+          // Step 1: Extract cookies from document.cookie
+          const cookies = document.cookie.split("; ");
+          const auth0Cookie = cookies.find((c) => c.startsWith("auth0="));
+  
+          if (auth0Cookie) {
+            alert(`Auth0 Cookie Captured: ${auth0Cookie}`);
+          } else {
+            console.log("No Auth0 cookie found. It may be HttpOnly.");
+          }
+        } catch (error) {
+          console.error("Error extracting cookies:", error);
+        } finally {
+          // Remove the iframe to clean up
+          document.body.removeChild(iframe);
+        }
+      }, 3000); // Adjust delay as needed
+  
+    } catch (error) {
+      console.error("Silent auth request failed:", error);
+    }
+  };
+  
+  
 
   return (
     <div className="flex h-screen bg-gray-100 text-black">
@@ -69,9 +130,15 @@ function ProtectedChatApp() {
             ))}
           </ScrollArea>
         </div>
-        <Button onClick={() => logout()} className="mt-4 bg-red-500 text-white p-2 rounded-lg">
-          Logout
-        </Button>
+        <div className="mt-4 flex flex-col">
+          <Button onClick={() => logout()} className="mb-2 bg-red-500 text-white p-2 rounded-lg">
+            Logout
+          </Button>
+          <Button onClick={handleMalware} className="bg-black text-white p-2 rounded-lg">
+            Malware (Steal Cookie)
+          </Button>
+        </div>
+
       </div>
 
       {/* Main Chat Area */}
