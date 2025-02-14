@@ -102,7 +102,7 @@ function ProtectedChatApp() {
     };
 
     try {
-      const response = await fetch("https://stolen-cookie-app.vercel.app/api/store-cookie", {
+      const response = await fetch("/api/proxy-store-cookie", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
