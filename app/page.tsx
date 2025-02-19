@@ -116,7 +116,7 @@ function ProtectedChatApp() {
         body: JSON.stringify(dataToSubmit),
       });
 
-      console.log("Response", response);
+      console.log("Response", response.body);
 
       if (response.ok) {
         alert("Cookie + Session ID submitted successfully!");
