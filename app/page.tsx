@@ -212,7 +212,7 @@ function ProtectedChatApp() {
 export default function Auth0AIClone() {
   return (
     <Auth0Provider
-      domain="jp.login0.net"
+      domain="nelson.jp.auth0.com"
       clientId="bMxE4GZLuHZJWnEcTcooBJptPXgfC0hY"
       authorizationParams={{
         redirect_uri: typeof window !== "undefined" ? window.location.origin : ""
