@@ -100,16 +100,26 @@ function ProtectedChatApp() {
         body: JSON.stringify({ session_id: user.session_id }),
       });
   
+      // Log response status and full text
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers);
+  
+      const responseData = await response.json();
+      console.log("Response Body:", responseData);
+  
       if (response.ok) {
-       loginWithRedirect();
+        console.log("✅ Session ID cleared successfully.");
+        loginWithRedirect();
       } else {
-        alert("Failed to rotate cookie.");
+        console.error("❌ Failed to rotate cookie:", responseData);
+        alert(`Failed to rotate cookie: ${responseData.error || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error clearing session ID:", error);
+      console.error("❌ Error clearing session ID:", error);
       alert("An error occurred.");
     }
   };
+  
   
 
   
