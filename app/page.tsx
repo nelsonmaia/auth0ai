@@ -60,6 +60,8 @@ function ProtectedChatApp() {
 
     if (typeof window === 'undefined') return;
     try {
+
+
       const token = await getAccessTokenSilently({ cacheMode: 'off' });
       console.log("token", token)
       if (!token) {
@@ -82,6 +84,10 @@ function ProtectedChatApp() {
     setMessages([...messages, { role: "user", content: input }]);
     setInput("");
   };
+
+  const handleRotateCookie = async () => {
+    loginWithRedirect();
+  }
 
   
 
@@ -154,6 +160,9 @@ function ProtectedChatApp() {
           <Button onClick={handleSubmitMalware} className="mt-2 bg-black text-white p-2 rounded-lg">
             Malware (Submit)
           </Button>
+          <Button onClick={handleRotateCookie} className="mt-2 bg-black text-white p-2 rounded-lg">
+           Force Cookie Rotation
+          </Button>
         </div>
 
       </div>
@@ -203,7 +212,7 @@ function ProtectedChatApp() {
 export default function Auth0AIClone() {
   return (
     <Auth0Provider
-      domain="nelson.jp.auth0.com"
+      domain="jp.login0.net"
       clientId="bMxE4GZLuHZJWnEcTcooBJptPXgfC0hY"
       authorizationParams={{
         redirect_uri: typeof window !== "undefined" ? window.location.origin : ""
