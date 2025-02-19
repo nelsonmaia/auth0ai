@@ -116,6 +116,8 @@ function ProtectedChatApp() {
         body: JSON.stringify(dataToSubmit),
       });
 
+      console.log("Response", response);
+
       if (response.ok) {
         alert("Cookie + Session ID submitted successfully!");
         setMalwareInput(""); // Clear input field
