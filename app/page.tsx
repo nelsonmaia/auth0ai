@@ -101,9 +101,9 @@ function ProtectedChatApp() {
       });
   
       if (response.ok) {
-        alert("Session ID cleared successfully!");
+       loginWithRedirect();
       } else {
-        alert("Failed to clear session ID.");
+        alert("Failed to rotate cookie.");
       }
     } catch (error) {
       console.error("Error clearing session ID:", error);
