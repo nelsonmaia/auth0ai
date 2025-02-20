@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Send, Menu } from "lucide-react";
 
+
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 function UserProfile() {
@@ -62,7 +63,7 @@ function ProtectedChatApp() {
           <h2 className="text-lg font-bold">Authentication Error</h2>
           <p>{decodeURIComponent(errorDescription)}</p>
           <button
-            onClick={() => loginWithRedirect()}
+            onClick={() => loginWithRedirect({authorizationParams : {retry: true}})}
             className="mt-4 bg-black text-white p-2 rounded-lg"
           >
             Try Again
