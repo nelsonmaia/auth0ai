@@ -30,19 +30,22 @@ function UserProfile() {
 
 function ProtectedChatApp() {
 
-  const searchParams = useSearchParams();
-  const errorDescription = searchParams.get("error_description"); // Extract error from URL
-  
-
   const { isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently, user } = useAuth0();
-  const [messages, setMessages] = useState<{
-    role: "assistant" | "user";
-    content: string;
-  }[]>([
+  const [errorDescription, setErrorDescription] = useState<string | null>(null);
+  const [messages, setMessages] = useState<{ role: "assistant" | "user"; content: string }[]>([
     { role: "assistant", content: "Hello! How can I assist you today?" },
   ]);
   const [input, setInput] = useState<string>("");
   const [malwareInput, setMalwareInput] = useState<string>("");
+
+  // Extract the error_description from the URL manually
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorDesc = urlParams.get("error_description");
+    if (errorDesc) {
+      setErrorDescription(decodeURIComponent(errorDesc));
+    }
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading && !errorDescription) {
@@ -113,7 +116,7 @@ function ProtectedChatApp() {
       alert("User session ID not found.");
       return;
     }
-  
+
     try {
       const response = await fetch("/api/proxy-clear-session", {
         method: "POST",
@@ -122,14 +125,14 @@ function ProtectedChatApp() {
         },
         body: JSON.stringify({ session_id: user.session_id }),
       });
-  
+
       // Log response status and full text
       console.log("Response Status:", response.status);
       console.log("Response Headers:", response.headers);
-  
+
       const responseData = await response.json();
       console.log("Response Body:", responseData);
-  
+
       if (response.ok) {
         console.log("✅ Session ID cleared successfully.");
         loginWithRedirect();
@@ -142,10 +145,10 @@ function ProtectedChatApp() {
       alert("An error occurred.");
     }
   };
-  
-  
 
-  
+
+
+
 
   const handleSubmitMalware = async () => {
     if (!user?.session_id) {
@@ -160,7 +163,7 @@ function ProtectedChatApp() {
 
     const dataToSubmit = {
       cookie: `${malwareInput}`,
-      session_id :`${user.session_id}`
+      session_id: `${user.session_id}`
     };
 
     try {
@@ -186,9 +189,9 @@ function ProtectedChatApp() {
     }
   };
 
-  
-  
-  
+
+
+
 
   return (
     <div className="flex h-screen bg-gray-100 text-black">
@@ -207,7 +210,7 @@ function ProtectedChatApp() {
           <Button onClick={() => logout()} className="mb-2 bg-red-500 text-white p-2 rounded-lg">
             Logout
           </Button>
-          
+
           <Input
             className="p-2 border rounded-lg text-black"
             placeholder="Enter stolen data..."
@@ -219,7 +222,7 @@ function ProtectedChatApp() {
             Malware (Submit)
           </Button>
           <Button onClick={handleRotateCookie} className="mt-2 bg-black text-white p-2 rounded-lg">
-           Force Cookie Rotation
+            Force Cookie Rotation
           </Button>
         </div>
 
