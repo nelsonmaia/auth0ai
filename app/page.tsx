@@ -6,8 +6,6 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Send, Menu } from "lucide-react";
-import { useSearchParams } from "next/navigation"
-
 
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
