@@ -99,6 +99,7 @@ function ProtectedChatApp() {
       console.error('Error retrieving token:', error);
       // alert('Session expired. Please log in again.');
       // logout();
+      loginWithRedirect();
       return;
     }
 
