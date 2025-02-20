@@ -12,7 +12,7 @@ import { Send, Menu } from "lucide-react";
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 function UserProfile() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth0();
+  const { user, isLoading, logout } = useAuth0();
   const [open, setOpen] = useState(false);
 
 
@@ -47,7 +47,7 @@ function UserProfile() {
 
 function ProtectedChatApp() {
 
-  const { isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently, user } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, isLoading, getAccessTokenSilently, user } = useAuth0();
   const [errorDescription, setErrorDescription] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ role: "assistant" | "user"; content: string }[]>([
     { role: "assistant", content: "Hello! How can I assist you today?" },
