@@ -208,7 +208,7 @@ function ProtectedChatApp() {
           </ScrollArea>
         </div>
         <div className="mt-4 flex flex-col">
-          <Button onClick={() => logout()} className="mb-2 bg-red-500 text-white p-2 rounded-lg">
+          <Button onClick={() => logout({logoutParams: {returnTo : window.location.origin}})} className="mb-2 bg-red-500 text-white p-2 rounded-lg">
             Logout
           </Button>
 
