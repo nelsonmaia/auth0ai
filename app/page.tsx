@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover"
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
@@ -11,20 +12,36 @@ import { Send, Menu } from "lucide-react";
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 function UserProfile() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, logout } = useAuth0();
+  const [open, setOpen] = useState(false);
+
 
   if (isLoading) {
     return <div>Loading ...</div>;
   }
 
   return (
-    isAuthenticated && (
-      <div className="flex items-center space-x-2">
-        <span>{user?.session_id}</span> 
-        <p>{user?.sub}</p>
-        <Image src={user?.picture || '/default-avatar.png'} alt={user?.name || 'User'} width={32} height={32} className='rounded-full' />
-      </div>
-    )
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Image
+          src={user?.picture || "/default-avatar.png"}
+          alt={user?.name || "User"}
+          width={32}
+          height={32}
+          className="rounded-full cursor-pointer"
+        />
+      </PopoverTrigger>
+      <PopoverContent className="bg-white p-4 rounded-lg shadow-lg border border-gray-300 w-60">
+        <p className="text-sm text-gray-700">Family ID: <span className="font-mono">{user?.session_id || "N/A"}</span></p>
+        <p className="text-sm text-gray-700 mt-1">User ID: <span className="font-mono">{user?.sub}</span></p>
+        <Button 
+          className="mt-4 w-full bg-red-500 text-white p-2 rounded-lg"
+          onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+        >
+          Logout
+        </Button>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -208,13 +225,9 @@ function ProtectedChatApp() {
           </ScrollArea>
         </div>
         <div className="mt-4 flex flex-col">
-          <Button onClick={() => logout({logoutParams: {returnTo : window.location.origin}})} className="mb-2 bg-red-500 text-white p-2 rounded-lg">
-            Logout
-          </Button>
-
           <Input
             className="p-2 border rounded-lg text-black"
-            placeholder="Enter stolen data..."
+            placeholder="Enter stolen cookie data..."
             value={malwareInput}
             onChange={(e) => setMalwareInput(e.target.value)}
           />
@@ -226,7 +239,6 @@ function ProtectedChatApp() {
             Force Cookie Rotation
           </Button>
         </div>
-
       </div>
 
       {/* Main Chat Area */}
@@ -234,6 +246,11 @@ function ProtectedChatApp() {
         <div className="flex items-center justify-between p-4 border-b border-gray-300">
           <Menu className="md:hidden text-gray-700" size={24} />
           <h1 className="text-xl font-bold">Auth0AI</h1>
+          {user?.cookies_warning && (
+            <div className="ml-4 bg-yellow-200 text-yellow-900 px-4 py-2 rounded-lg shadow-md">
+              ⚠️ {user.cookies_warning}
+            </div>
+          )}
           <UserProfile />
         </div>
 
