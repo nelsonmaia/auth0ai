@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Send, Menu } from "lucide-react";
+import { useSearchParams } from "next/navigation"
 
 
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
@@ -20,15 +21,19 @@ function UserProfile() {
   return (
     isAuthenticated && (
       <div className="flex items-center space-x-2">
-        {user?.session_id}
+        <span>{user?.session_id}</span>
         <Image src={user?.picture || '/default-avatar.png'} alt={user?.name || 'User'} width={32} height={32} className='rounded-full' />
-        
       </div>
     )
   );
 }
 
 function ProtectedChatApp() {
+
+  const searchParams = useSearchParams();
+  const errorDescription = searchParams.get("error_description"); // Extract error from URL
+  
+
   const { isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently, user } = useAuth0();
   const [messages, setMessages] = useState<{
     role: "assistant" | "user";
@@ -40,13 +45,30 @@ function ProtectedChatApp() {
   const [malwareInput, setMalwareInput] = useState<string>("");
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
+    if (!isAuthenticated && !isLoading && !errorDescription) {
       loginWithRedirect();
     }
   }, [isAuthenticated, isLoading, loginWithRedirect]);
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen bg-gray-100 text-black">Loading...</div>;
+  }
+
+  if (!isAuthenticated && errorDescription) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100 text-black p-4">
+        <div className="bg-red-500 text-white p-4 rounded-lg text-center">
+          <h2 className="text-lg font-bold">Authentication Error</h2>
+          <p>{decodeURIComponent(errorDescription)}</p>
+          <button
+            onClick={() => loginWithRedirect()}
+            className="mt-4 bg-black text-white p-2 rounded-lg"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
