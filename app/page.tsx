@@ -20,7 +20,8 @@ function UserProfile() {
   return (
     isAuthenticated && (
       <div className="flex items-center space-x-2">
-        <span>{user?.session_id}</span>
+        <span>{user?.session_id}</span> 
+        <p>{user?.sub}</p>
         <Image src={user?.picture || '/default-avatar.png'} alt={user?.name || 'User'} width={32} height={32} className='rounded-full' />
       </div>
     )
